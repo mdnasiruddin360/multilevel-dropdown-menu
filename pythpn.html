@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javascript Menu</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        ul {
+        list-style-type: none;
+    }
+
+    ul li {
+        display: inline-block;
+        background-color: green;
+        margin: 2px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        color: #fff;
+    }
+
+    ul li:hover {
+        background-color: blue;
+    }
+
+    .add-btn,
+    .remove-btn {
+        background-color: pink;
+        border-radius: 50%;
+        border: none;
+        margin: 2px;
+        color: red;
+
+    }
+
+    .remove-btn {
+        background-color: coral;
+        color: red;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div>
+            <input type="text" v-model="menu_item">
+            <select v-if="menus.length" v-model="parent_id">
+                <option v-for="(item,index) in menus" :value="item.id">{{item.title}}</option>
+            </select>
+            <input type="button" value="Add" @click="add">
+        </div>
+        <ul v-html="list">
+        </ul>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+    function generate_multilevel_menu(menus, parent_id = null) {
+        let list = "";
+        let rows = menus.filter(function(item) {
+            return item.pid == parent_id
+        })
+
+        rows.forEach(function(row) {
+
+            list += `<li onclick="remove(${row.id})">${row.title}</li>`;
+            list += "<ul>" + generate_multilevel_menu(menus, row.id) + "</ul>"
+        })
+        return list;
+    }
+
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            menu_item: "",
+            parent_id: null,
+            list: "",
+            menus: [],
+        },
+        mounted() {
+            this.list = generate_multilevel_menu(this.menus)
+        },
+        watch: {
+            menus() {
+                this.list = generate_multilevel_menu(this.menus)
+            }
+        },
+
+        methods: {
+            createMenu() {
+                this.list = generate_multilevel_menu(this.menus)
+            },
+            add() {
+                this.menus.push({ id: this.menus.length + 1, pid: this.parent_id, title: this.menu_item })
+                this.menu_item = ""
+
+            },
+            update(id) {
+                this.menus.forEach(function(item, index) {
+                    if (item.id == id) {
+                        let x = prompt("Enter new name", item.title);
+                        app.menus[index]['title'] = x
+
+
+                    }
+                })
+            },
+            remove(id) {
+
+                let new_menus = app.menus.filter(function(item, index) {
+
+
+                    return item.id != id && item.pid != id
+
+
+                })
+                app.menus = new_menus
+
+            }
+
+        }
+    })
+
+    function update(id) {
+        app.update(id)
+    }
+
+    function remove(id) {
+        app.remove(id)
+    }
+
+
+    let x = [
+        { id: 1, pid: null, title: "Home" },
+        { id: 2, pid: null, title: "Blog" },
+        { id: 3, pid: 2, title: "Blog1" },
+        { id: 4, pid: 2, title: "Blog2" },
+        { id: 5, pid: null, title: "About" },
+        { id: 6, pid: null, title: "Products" }
+
+    ]
+    let y = x.filter(function(item) {
+        return item.id != 2 && item.pid != 2
+    })
+    x = y
+    console.log(x)
+    </script>
+</body>
+
+</html>
