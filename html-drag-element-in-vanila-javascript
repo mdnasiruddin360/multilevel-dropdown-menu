@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <style>
+    .container div {
+
+        list-style-type: none;
+        font-family: tahoma;
+        font-size: 30px;
+        padding: 5px 20px;
+        margin-top: 2px;
+        width: 400px;
+        color: #fff;
+        resize: both;
+        overflow: hidden;
+        background-color: green;
+    }
+
+    .container {
+        width: 1000px;
+        height: 100vh;
+        background-color: aqua;
+    }
+
+    .draggable {
+
+        color: red;
+        background-color: aqua;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div>Nasir</div>
+        <div>Kashem</div>
+        <div>Kamal</div>
+        <div>Zahir</div>
+        <div>Masud</div>
+    </div>
+    <script>
+    var lists = document.querySelectorAll('.container div');
+    var container = document.querySelector('.container');
+    let ix = 0,
+        iy = 0;
+
+    lists.forEach(function(list, index) {
+
+        list.setAttribute("contenteditable", true)
+
+        list.onmousedown = function(event) {
+
+            ix = event.clientX - list.offsetLeft;
+            iy = event.clientY - list.offsetTop;
+            list.classList.add("draggable")
+            list.style.position = "absolute";
+            list.style.cursor = "move";
+            list.style.backgroundColor = "red"
+        }
+        list.onmouseup = function(event) {
+            list.classList.remove('draggable')
+            list.style.cursor = "auto";
+            list.style.backgroundColor = "green"
+        }
+
+    })
+    container.onmousemove = function(event) {
+
+        let list = document.querySelector(".draggable")
+        let final_x = (event.clientX - ix) + "px";
+        let final_y = (event.clientY - iy) + "px";
+        list.style.left = final_x;
+        list.style.top = final_y;
+
+
+
+
+
+    }
+    </script>
+</body>
+
+</html>
